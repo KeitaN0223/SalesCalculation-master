@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -43,13 +42,8 @@ public class CalculateSales {
 		}
 		// 1.2 支店定義ファイルのフォーマットが正しいのか
 		BufferedReader br = null;
-		BufferedReader br1 = null;
-		BufferedReader br2 = null;
-		FileReader fr1 = null;
 		try {
-			FileReader fr;
-			fr = new FileReader(branchFile);
-			br = new BufferedReader(fr);
+			br = new BufferedReader(new FileReader(branchFile));
 			String s;
 			// 1.2 ファイルの読み込み
 			while ((s = br.readLine()) != null) {
@@ -91,12 +85,11 @@ public class CalculateSales {
 		}
 		try {
 			// 2.2 商品定義ファイルのフォーマットが正しいのか
-			fr1 = new FileReader(commodityFile);
-			br1 = new BufferedReader(fr1);
+			br = new BufferedReader(new FileReader(commodityFile));
 			String s1;
 
 			// 2.2 商品定義ファイルのフォーマットが正しいのか
-			while ((s1 = br1.readLine()) != null) {
+			while ((s1 = br.readLine()) != null) {
 				String[] resultArray1 = s1.split(",");
 				if (resultArray1.length != 2) {
 					System.out.println("商品定義ファイルのフォーマットが不正です");
@@ -118,9 +111,8 @@ public class CalculateSales {
 		} finally {
 			try {
 				br.close();
-				fr1.close();
-				br1.close();
 			} catch (IOException e) {
+				System.out.println("予期せぬエラーが発生しました");
 				return;
 			}
 		}
@@ -128,15 +120,13 @@ public class CalculateSales {
 		File dir = new File(args[0]);
 		File[] files = dir.listFiles();
 		// フォルダーがないか調べる あったらエラーを送る
-		/*for (int i = 0; i < files.length; i++) {
-			if (files[i].isDirectory()) {
-				System.out.println("売上ファイル名が連番になっていません");
-				return;
-			}
-		}*/
+		/*
+		 * for (int i = 0; i < files.length; i++) { if (files[i].isDirectory())
+		 * { System.out.println("売上ファイル名が連番になっていません"); return; } }
+		 */
 		ArrayList<String> rcdFiles = new ArrayList<String>();
 
-		for (int i = 0; i < files.length; i++) {
+/*		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
 			String fileName = file.getName();
 			if (fileName.matches("^[0-9]{7}[1-9].rcd$") && file.isFile()) {
@@ -149,37 +139,24 @@ public class CalculateSales {
 		for (int i = 0; i < rcdFiles.size(); i++) {
 			rcdNum.add(Integer.parseInt(rcdFiles.get(i).substring(0, 8)));
 		} // rcdファイルの番号をrcdNumに格納した
-
-		int max = rcdNum.get(0); // rcd番号の最大値と最小値を調べる
-		int min = rcdNum.get(1);
-		for (int i = 0; i < rcdNum.size(); i++) {
-			int j = rcdNum.get(i);
-			if (j > max) {
-				max = j;
-			}
-			if (j < min) {
-				min = j;
-			}
-		}
+			// rcdFiles内をソートする
+		Collections.sort(rcdFiles);
+		int min = Integer.parseInt(rcdFiles.get(0));
+		int max = Integer.parseInt(rcdFiles.get(rcdFiles.size()-1));
 		int fileNum = max - min + 1; // rcdファイルの数
 		if (fileNum != rcdFiles.size()) {
 			System.out.println("売上ファイル名が連番になっていません");
 			return;
-		}
-
-		DecimalFormat dformat = new DecimalFormat("00000000");
-
-		// rcdFiles内をソートする
-		Collections.sort(rcdFiles);
-		for (int i = 1; i < rcdFiles.size() + 1; i++) {
+		}*/
+		for (int i = 0; i < rcdFiles.size(); i++) {
 			// ArrayListでrcdDataをまとめる
 			ArrayList<String> rcdData = new ArrayList<String>();
 			try {
-				File rcdFilesPath = new File(args[0], rcdFiles.get(i - 1));
-				br2 = new BufferedReader(new FileReader(rcdFilesPath));
+				File rcdFilesPath = new File(args[0], rcdFiles.get(i));
+				br = new BufferedReader(new FileReader(rcdFilesPath));
 				String str;
 				// 行ごとのデータをArrayListに格納した
-				while ((str = br2.readLine()) != null) {
+				while ((str = br.readLine()) != null) {
 					rcdData.add(str);
 				}
 			} catch (IOException e) {
@@ -188,27 +165,26 @@ public class CalculateSales {
 			} finally {
 				try {
 					br.close();
-					br1.close();
-					br2.close();
 				} catch (IOException e) {
+					System.out.println("予期せぬエラーが発生しました");
 					return;
 				}
 			}
 
 			if (rcdData.size() != 3) {
-				System.out.println(dformat.format(i) + ".rcdのフォーマットが不正です");
+				System.out.println(rcdFiles.get(i) + "のフォーマットが不正です");
 				return;
 			}
 
 			// rcdDataの1番目の要素(支店コード)が不正だったらエラーを出力し、終了
 
 			if (branchMap.get(rcdData.get(0)) == null) {
-				System.out.println(dformat.format(i) + ".rcdの支店コードが不正です");
+				System.out.println(rcdFiles.get(i) + "の支店コードが不正です");
 				return;
 			}
 			// rcdDataの2番目の要素(商品コード)が不正だったらエラーを出力し、終了
 			if (commodityMap.get(rcdData.get(1)) == null) {
-				System.out.println(dformat.format(i) + ".rcdの商品コードが不正です");
+				System.out.println(rcdFiles.get(i) + "の商品コードが不正です");
 				return;
 			}
 			// System.out.println(rcdData);
@@ -257,8 +233,7 @@ public class CalculateSales {
 		PrintWriter pw = null;
 		try {
 			File branchOutFile = new File(args[0], "branch.out");
-			FileWriter fw = new FileWriter(branchOutFile);
-			BufferedWriter bw = new BufferedWriter(fw);
+			BufferedWriter bw = new BufferedWriter(new FileWriter(branchOutFile));
 			pw = new PrintWriter(bw);
 			for (Entry<String, Long> s : branchEntries) {
 				pw.println(s.getKey() + "," + branchMap.get(s.getKey()) + "," + Long.toString(s.getValue()));
@@ -282,8 +257,7 @@ public class CalculateSales {
 		PrintWriter cpw = null;
 		try {
 			File commodityOutFile = new File(args[0], "commodity.out");
-			FileWriter cfw = new FileWriter(commodityOutFile);
-			BufferedWriter cbw = new BufferedWriter(cfw);
+			BufferedWriter cbw = new BufferedWriter(new FileWriter(commodityOutFile));
 			cpw = new PrintWriter(cbw);
 			for (Entry<String, Long> s : commodityEntries) {
 				cpw.println(s.getKey() + "," + commodityMap.get(s.getKey()) + "," + Long.toString(s.getValue()));
