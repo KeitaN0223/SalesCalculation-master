@@ -128,18 +128,18 @@ public class CalculateSales {
 		File dir = new File(args[0]);
 		File[] files = dir.listFiles();
 		// フォルダーがないか調べる あったらエラーを送る
-		for (int i = 0; i < files.length; i++) {
+		/*for (int i = 0; i < files.length; i++) {
 			if (files[i].isDirectory()) {
 				System.out.println("売上ファイル名が連番になっていません");
 				return;
 			}
-		}
+		}*/
 		ArrayList<String> rcdFiles = new ArrayList<String>();
 
 		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
 			String fileName = file.getName();
-			if (fileName.matches("^[0-9]{7}[1-9].rcd$")) {
+			if (fileName.matches("^[0-9]{7}[1-9].rcd$") && file.isFile()) {
 				// 3.1 rcdファイルをrcdFilesに格納した
 				rcdFiles.add(fileName);
 			}
@@ -184,6 +184,7 @@ public class CalculateSales {
 				}
 			} catch (IOException e) {
 				System.out.println("予期せぬエラーが発生しました");
+				return;
 			} finally {
 				try {
 					br.close();
