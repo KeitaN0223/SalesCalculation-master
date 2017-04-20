@@ -127,7 +127,7 @@ public class CalculateSales {
 		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
 			String fileName = file.getName();
-			if (fileName.matches("^[0-9]{7}[1-9].rcd$") && file.isFile()) {
+			if (fileName.matches("^[0-9]{8}.rcd$") && file.isFile()) {
 				// 3.1 rcdファイルをrcdFilesに格納した
 				rcdFiles.add(fileName);
 			}
@@ -157,6 +157,11 @@ public class CalculateSales {
 				while ((str = br.readLine()) != null) {
 					rcdData.add(str);
 				}
+				//売上額に文字が入ったらエラー処理
+				if(!rcdData.get(2).matches( "^[0-9]*$")){
+					System.out.println("予期せぬエラーが発生しました");
+					return;
+				}
 			} catch (IOException e) {
 				System.out.println("予期せぬエラーが発生しました");
 				return;
@@ -185,8 +190,7 @@ public class CalculateSales {
 				System.out.println(rcdFiles.get(i) + "の商品コードが不正です");
 				return;
 			}
-			// System.out.println(rcdData);
-
+			
 			// rcdDataの一番目の要素（支店コード）から売上を呼び出す
 			// branchBaseMoneyはもとのお金
 			long branchBaseMoney = branchEarningsMap.get(rcdData.get(0));
@@ -205,7 +209,6 @@ public class CalculateSales {
 				return;
 			}
 			branchEarningsMap.put(rcdData.get(0), branchSum);
-
 			// rcdDataの二番目の要素（商品コード）から売上を呼び出す
 			// commodityBaseMoneyはもとのお金
 			long commodityBaseMoney = commodityEarningsMap.get(rcdData.get(1));
@@ -263,9 +266,7 @@ public class CalculateSales {
 			System.out.println("予期せぬエラーが発生しました");
 			return;
 		} finally {
-
 			pw.close();
-
 		}
 	}
 
