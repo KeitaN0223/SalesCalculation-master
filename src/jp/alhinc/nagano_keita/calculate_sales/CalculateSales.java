@@ -62,7 +62,6 @@ public class CalculateSales {
 				// 支店番号に紐づいている支店別売上を0円に初期化
 				branchEarningsMap.put(resultArray[0], 0L);
 			}
-
 		} catch (IOException e) {
 			System.out.println("予期せぬエラーが発生しました");
 			return;
@@ -125,8 +124,7 @@ public class CalculateSales {
 		 * { System.out.println("売上ファイル名が連番になっていません"); return; } }
 		 */
 		ArrayList<String> rcdFiles = new ArrayList<String>();
-
-/*		for (int i = 0; i < files.length; i++) {
+		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
 			String fileName = file.getName();
 			if (fileName.matches("^[0-9]{7}[1-9].rcd$") && file.isFile()) {
@@ -141,13 +139,13 @@ public class CalculateSales {
 		} // rcdファイルの番号をrcdNumに格納した
 			// rcdFiles内をソートする
 		Collections.sort(rcdFiles);
-		int min = Integer.parseInt(rcdFiles.get(0));
-		int max = Integer.parseInt(rcdFiles.get(rcdFiles.size()-1));
+		int min = Integer.parseInt(rcdFiles.get(0).substring(0, 8));
+		int max = Integer.parseInt(rcdFiles.get(rcdFiles.size()-1).substring(0, 8));
 		int fileNum = max - min + 1; // rcdファイルの数
 		if (fileNum != rcdFiles.size()) {
 			System.out.println("売上ファイル名が連番になっていません");
 			return;
-		}*/
+		}
 		for (int i = 0; i < rcdFiles.size(); i++) {
 			// ArrayListでrcdDataをまとめる
 			ArrayList<String> rcdData = new ArrayList<String>();
