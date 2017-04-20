@@ -67,8 +67,11 @@ public class CalculateSales {
 			return;
 		} finally {
 			try {
-				br.close();
+				if (br != null) {
+					br.close();
+				}
 			} catch (IOException e) {
+				System.out.println("予期せぬエラーが発生しました");
 				return;
 			}
 		}
@@ -109,7 +112,9 @@ public class CalculateSales {
 			return;
 		} finally {
 			try {
-				br.close();
+				if (br != null) {
+					br.close();
+				}
 			} catch (IOException e) {
 				System.out.println("予期せぬエラーが発生しました");
 				return;
@@ -140,7 +145,7 @@ public class CalculateSales {
 			// rcdFiles内をソートする
 		Collections.sort(rcdFiles);
 		int min = Integer.parseInt(rcdFiles.get(0).substring(0, 8));
-		int max = Integer.parseInt(rcdFiles.get(rcdFiles.size()-1).substring(0, 8));
+		int max = Integer.parseInt(rcdFiles.get(rcdFiles.size() - 1).substring(0, 8));
 		int fileNum = max - min + 1; // rcdファイルの数
 		if (fileNum != rcdFiles.size()) {
 			System.out.println("売上ファイル名が連番になっていません");
@@ -157,17 +162,15 @@ public class CalculateSales {
 				while ((str = br.readLine()) != null) {
 					rcdData.add(str);
 				}
-				//売上額に文字が入ったらエラー処理
-				if(!rcdData.get(2).matches( "^[0-9]*$")){
-					System.out.println("予期せぬエラーが発生しました");
-					return;
-				}
+
 			} catch (IOException e) {
 				System.out.println("予期せぬエラーが発生しました");
 				return;
 			} finally {
 				try {
-					br.close();
+					if (br != null) {
+						br.close();
+					}
 				} catch (IOException e) {
 					System.out.println("予期せぬエラーが発生しました");
 					return;
@@ -178,7 +181,11 @@ public class CalculateSales {
 				System.out.println(rcdFiles.get(i) + "のフォーマットが不正です");
 				return;
 			}
-
+			// 売上額に文字が入ったらエラー処理
+			if (!rcdData.get(2).matches("^[0-9]*$")) {
+				System.out.println("予期せぬエラーが発生しました");
+				return;
+			}
 			// rcdDataの1番目の要素(支店コード)が不正だったらエラーを出力し、終了
 
 			if (branchMap.get(rcdData.get(0)) == null) {
@@ -190,7 +197,7 @@ public class CalculateSales {
 				System.out.println(rcdFiles.get(i) + "の商品コードが不正です");
 				return;
 			}
-			
+
 			// rcdDataの一番目の要素（支店コード）から売上を呼び出す
 			// branchBaseMoneyはもとのお金
 			long branchBaseMoney = branchEarningsMap.get(rcdData.get(0));
@@ -243,7 +250,15 @@ public class CalculateSales {
 			System.out.println("予期せぬエラーが発生しました");
 			return;
 		} finally {
-			pw.close();
+			try{
+				if (pw != null) {
+				pw.close();
+				}
+			}catch(NullPointerException e){
+				System.out.println("予期せぬエラーが発生しました");
+				return;
+			}
+
 		}
 
 		// 4 ソートしてcommodity.outの出力
@@ -266,7 +281,14 @@ public class CalculateSales {
 			System.out.println("予期せぬエラーが発生しました");
 			return;
 		} finally {
-			pw.close();
+			try{
+				if (pw != null) {
+					pw.close();
+				}
+			}catch(NullPointerException e){
+				System.out.println("予期せぬエラーが発生しました");
+				return;
+			}
 		}
 	}
 
