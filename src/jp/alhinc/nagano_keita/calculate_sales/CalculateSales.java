@@ -138,10 +138,6 @@ public class CalculateSales {
 			}
 		}
 		// rcdファイルの歯抜けを調べる
-		ArrayList<Integer> rcdNum = new ArrayList<Integer>(); // rcdファイルの番号が格納されているArraylist
-		for (int i = 0; i < rcdFiles.size(); i++) {
-			rcdNum.add(Integer.parseInt(rcdFiles.get(i).substring(0, 8)));
-		} // rcdファイルの番号をrcdNumに格納した
 			// rcdFiles内をソートする
 		Collections.sort(rcdFiles);
 		int min = Integer.parseInt(rcdFiles.get(0).substring(0, 8));
@@ -188,12 +184,12 @@ public class CalculateSales {
 			}
 			// rcdDataの1番目の要素(支店コード)が不正だったらエラーを出力し、終了
 
-			if (branchMap.get(rcdData.get(0)) == null) {
+			if (!branchMap.containsKey(rcdData.get(0)))  {
 				System.out.println(rcdFiles.get(i) + "の支店コードが不正です");
 				return;
 			}
 			// rcdDataの2番目の要素(商品コード)が不正だったらエラーを出力し、終了
-			if (commodityMap.get(rcdData.get(1)) == null) {
+			if (!commodityMap.containsKey(rcdData.get(1))) {
 				System.out.println(rcdFiles.get(i) + "の商品コードが不正です");
 				return;
 			}
