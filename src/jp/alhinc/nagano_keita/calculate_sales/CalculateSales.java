@@ -16,16 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class CalculateSales {
-	/*ファイルの出力のメソッド
-	 * ファイルの読み込みのメソッド
-	 * 引数を使って役割を分ける
-	 * ファイル名
-	 * ネームの入ったマップ
-	 * 金額が入ったマップ
-	 * どこに出力するのか
-	 * 出力メソッドの戻り値はboolean型でtrue,falseを返す
-	 */
-
 	public static void main(String[] args) {
 		if (args.length != 1) {
 			System.out.println("予期せぬエラーが発生しました");
@@ -43,33 +33,29 @@ public class CalculateSales {
 		// 商品ごとの売上マップを宣言する
 		HashMap<String, Long> commodityEarningsMap = new HashMap<String, Long>();
 		BufferedReader br = null;
-		
-		//inputメソッドを呼び出して、支店定義ファイルと商品定義ファイルを読み込んだ
-		if(!input(args[0],"branch.lst","支店定義ファイル","^[0-9]{3}$", branchEarningsMap, branchMap)){
+
+		// inputメソッドを呼び出して、支店定義ファイルと商品定義ファイルを読み込んだ
+		if (!input(new String[] { args[0], "branch.lst", "支店定義ファイル", "^[0-9]{3}$" }, branchEarningsMap, branchMap)) {
 			return;
 		}
-		if(!input(args[0],"commodity.lst","商品定義ファイル","^[a-z0-9A-Z]{8}$", commodityEarningsMap, commodityMap)){
+		if (!input(args[0], "commodity.lst", "商品定義ファイル", "^[a-z0-9A-Z]{8}$", commodityEarningsMap, commodityMap)) {
 			return;
 		}
 		// 3.1 ファイル名半角数字8桁のrcdファイルがあるか参照する
 		File dir = new File(args[0]);
 		File[] files = dir.listFiles();
 		// フォルダーがないか調べる あったらエラーを送る
-		/*
-		 * for (int i = 0; i < files.length; i++) { if (files[i].isDirectory())
-		 * { System.out.println("売上ファイル名が連番になっていません"); return; } }
-		 */
 		ArrayList<String> rcdFiles = new ArrayList<String>();
 		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
 			String fileName = file.getName();
-			if (fileName.matches("^[0-9]{8}.rcd$") && file.isFile()) {
-				// 3.1 rcdファイルをrcdFilesに格納した
+			// 3.1 rcdファイルをrcdFilesに格納した
+			if (file.isFile() && fileName.matches("^[0-9]{8}.rcd$")) {
 				rcdFiles.add(fileName);
 			}
 		}
 		// rcdファイルの歯抜けを調べる
-			// rcdFiles内をソートする
+		// rcdFiles内をソートする
 		Collections.sort(rcdFiles);
 		int min = Integer.parseInt(rcdFiles.get(0).substring(0, 8));
 		int max = Integer.parseInt(rcdFiles.get(rcdFiles.size() - 1).substring(0, 8));
@@ -89,7 +75,6 @@ public class CalculateSales {
 				while ((str = br.readLine()) != null) {
 					rcdData.add(str);
 				}
-
 			} catch (IOException e) {
 				System.out.println("予期せぬエラーが発生しました");
 				return;
@@ -103,7 +88,6 @@ public class CalculateSales {
 					return;
 				}
 			}
-
 			if (rcdData.size() != 3) {
 				System.out.println(rcdFiles.get(i) + "のフォーマットが不正です");
 				return;
@@ -114,8 +98,7 @@ public class CalculateSales {
 				return;
 			}
 			// rcdDataの1番目の要素(支店コード)が不正だったらエラーを出力し、終了
-
-			if (!branchMap.containsKey(rcdData.get(0)))  {
+			if (!branchMap.containsKey(rcdData.get(0))) {
 				System.out.println(rcdFiles.get(i) + "の支店コードが不正です");
 				return;
 			}
@@ -124,7 +107,6 @@ public class CalculateSales {
 				System.out.println(rcdFiles.get(i) + "の商品コードが不正です");
 				return;
 			}
-
 			// rcdDataの一番目の要素（支店コード）から売上を呼び出す
 			// branchBaseMoneyはもとのお金
 			long branchBaseMoney = branchEarningsMap.get(rcdData.get(0));
@@ -156,24 +138,24 @@ public class CalculateSales {
 			}
 			commodityEarningsMap.put(rcdData.get(1), commoditySum);
 		}
-		// 4 Mapのvalue値でソートしてファイルに出力 
-		if(!output(args[0], "branch.out", branchEarningsMap, branchMap)){
+		// 4 Mapのvalue値でソートしてファイルに出力
+		if (!output(args[0], "branch.out", branchEarningsMap, branchMap)) {
+			System.out.println("予期せぬエラーが発生しました");
 			return;
 		}
-		
 
 		// 4 ソートしてcommodity.outの出力
 
-		if(!output(args[0], "commodity.out", commodityEarningsMap, commodityMap)){
+		if (!output(args[0], "commodity.out", commodityEarningsMap, commodityMap)) {
+			System.out.println("予期せぬエラーが発生しました");
 			return;
 		}
 	}
 
-
-	private static boolean output(String outputPath, String outputFileName, HashMap<String, Long> earningsMap, HashMap<String, String> nameMap){
+	private static boolean output(String outputPath, String outputFileName, HashMap<String, Long> earningsMap,
+			HashMap<String, String> nameMap) {
 		PrintWriter pw = null;
-		List<Map.Entry<String, Long>> entries = new ArrayList<Map.Entry<String, Long>>(
-				earningsMap.entrySet());
+		List<Map.Entry<String, Long>> entries = new ArrayList<Map.Entry<String, Long>>(earningsMap.entrySet());
 		Collections.sort(entries, new Comparator<Map.Entry<String, Long>>() {
 			@Override
 			public int compare(Entry<String, Long> entry1, Entry<String, Long> entry2) {
@@ -188,60 +170,103 @@ public class CalculateSales {
 				pw.println(s.getKey() + "," + nameMap.get(s.getKey()) + "," + Long.toString(s.getValue()));
 			}
 		} catch (IOException e) {
-			System.out.println("予期せぬエラーが発生しました");
 			return false;
 		} finally {
-			try{
+			try {
 				if (pw != null) {
 					pw.close();
 				}
-			}catch(NullPointerException e){
+			} catch (NullPointerException e) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static boolean input(String inputPath, String inputFileName, String fileName, String regularExpression,
+			HashMap<String, Long> earningsMap, HashMap<String, String> nameMap) {
+		File file = new File(inputPath, inputFileName);
+		BufferedReader br = null;
+		if (!file.exists()) {
+			System.out.println(fileName + "が存在しません");
+			return false;
+		}
+		try {
+			br = new BufferedReader(new FileReader(file));
+			String s;
+			// 1.2 ファイルの読み込み
+			while ((s = br.readLine()) != null) {
+				String[] resultArray = s.split(",");
+				// 1.2 支店番号が不正のとき、エラーメッセージを送る
+				if (resultArray.length != 2) {
+					System.out.println(fileName + "のフォーマットが不正です");
+					return false;
+				}
+				if (!resultArray[0].matches(regularExpression)) {
+					System.out.println(fileName + "のフォーマットが不正です");
+					return false;
+				}
+				// 1.2 支店番号と支店名を紐付けた
+				nameMap.put(resultArray[0], resultArray[1]);
+				// 支店番号に紐づいている支店別売上を0円に初期化
+				earningsMap.put(resultArray[0], 0L);
+			}
+		} catch (IOException e) {
+			System.out.println("予期せぬエラーが発生しました");
+			return false;
+		} finally {
+			try {
+				if (br != null) {
+					br.close();
+				}
+			} catch (IOException e) {
 				System.out.println("予期せぬエラーが発生しました");
 				return false;
 			}
 		}
 		return true;
 	}
-	private static boolean input(String inputPath, String inputFileName, String fileName, String regularExpression, HashMap<String, Long> earningsMap, HashMap<String, String> nameMap){
-		File file = new File(inputPath, inputFileName);
+
+	private static boolean input(String[] params, HashMap<String, Long> earningsMap, HashMap<String, String> nameMap) {
+		File file = new File(params[0], params[1]);
 		BufferedReader br = null;
-				if (!file.exists()) {
-					System.out.println(fileName + "が存在しません");
+		if (!file.exists()) {
+			System.out.println(params[1] + "が存在しません");
+			return false;
+		}
+		try {
+			br = new BufferedReader(new FileReader(file));
+			String s;
+			// 1.2 ファイルの読み込み
+			while ((s = br.readLine()) != null) {
+				String[] resultArray = s.split(",");
+				// 1.2 支店番号が不正のとき、エラーメッセージを送る
+				if (resultArray.length != 2) {
+					System.out.println(params[2] + "のフォーマットが不正です");
 					return false;
 				}
-				try {
-					br = new BufferedReader(new FileReader(file));
-					String s;
-					// 1.2 ファイルの読み込み
-					while ((s = br.readLine()) != null) {
-						String[] resultArray = s.split(",");
-						// 1.2 支店番号が不正のとき、エラーメッセージを送る
-						if (resultArray.length != 2) {
-							System.out.println(fileName + "のフォーマットが不正です");
-							return false;
-						}
-						if (!resultArray[0].matches(regularExpression)) {
-							System.out.println(fileName + "のフォーマットが不正です");
-							return false;
-						}
-						// 1.2 支店番号と支店名を紐付けた
-						nameMap.put(resultArray[0], resultArray[1]);
-						// 支店番号に紐づいている支店別売上を0円に初期化
-						earningsMap.put(resultArray[0], 0L);
-					}
-				} catch (IOException e) {
-					System.out.println("予期せぬエラーが発生しました");
+				if (!resultArray[0].matches(params[3])) {
+					System.out.println(params[2] + "のフォーマットが不正です");
 					return false;
-				} finally {
-					try {
-						if (br != null) {
-							br.close();
-						}
-					} catch (IOException e) {
-						System.out.println("予期せぬエラーが発生しました");
-						return false;
-					}
 				}
-				return true;
+				// 1.2 支店番号と支店名を紐付けた
+				nameMap.put(resultArray[0], resultArray[1]);
+				// 支店番号に紐づいている支店別売上を0円に初期化
+				earningsMap.put(resultArray[0], 0L);
+			}
+		} catch (IOException e) {
+			System.out.println("予期せぬエラーが発生しました");
+			return false;
+		} finally {
+			try {
+				if (br != null) {
+					br.close();
+				}
+			} catch (IOException e) {
+				System.out.println("予期せぬエラーが発生しました");
+				return false;
+			}
+		}
+		return true;
 	}
 }
