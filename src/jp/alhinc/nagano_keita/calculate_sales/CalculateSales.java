@@ -252,20 +252,19 @@ public class CalculateSales {
 				return ((Long) entry2.getValue()).compareTo((Long) entry1.getValue());
 			}
 		});
-		PrintWriter cpw = null;
 		try {
 			File commodityOutFile = new File(args[0], "commodity.out");
 			BufferedWriter cbw = new BufferedWriter(new FileWriter(commodityOutFile));
-			cpw = new PrintWriter(cbw);
+			pw = new PrintWriter(cbw);
 			for (Entry<String, Long> s : commodityEntries) {
-				cpw.println(s.getKey() + "," + commodityMap.get(s.getKey()) + "," + Long.toString(s.getValue()));
+				pw.println(s.getKey() + "," + commodityMap.get(s.getKey()) + "," + Long.toString(s.getValue()));
 			}
 		} catch (IOException e) {
 			System.out.println("予期せぬエラーが発生しました");
 			return;
 		} finally {
 
-			cpw.close();
+			pw.close();
 
 		}
 	}
