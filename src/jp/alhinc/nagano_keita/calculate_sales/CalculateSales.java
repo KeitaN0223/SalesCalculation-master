@@ -44,7 +44,7 @@ public class CalculateSales {
 		HashMap<String, Long> commodityEarningsMap = new HashMap<String, Long>();
 		BufferedReader br = null;
 		
-		
+		//inputメソッドを呼び出して、支店定義ファイルと商品定義ファイルを読み込んだ
 		if(!input(args[0],"branch.lst","支店定義ファイル","^[0-9]{3}$", branchEarningsMap, branchMap)){
 			return;
 		}
