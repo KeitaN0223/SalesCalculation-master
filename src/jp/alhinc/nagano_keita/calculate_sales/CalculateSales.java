@@ -152,6 +152,7 @@ public class CalculateSales {
 		}
 	}
 
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	private static boolean output(String outputPath, String outputFileName, HashMap<String, Long> earningsMap,
 			HashMap<String, String> nameMap) {
 		PrintWriter pw = null;
